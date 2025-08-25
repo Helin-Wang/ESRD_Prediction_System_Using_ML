@@ -5,6 +5,7 @@ import joblib
 import matplotlib.pyplot as plt
 import streamlit.components.v1 as components
 import io
+from streamlit_shap import st_shap
 
 # 加载模型和SHAP解释器
 model_1yr = joblib.load('./models/gbm_1yr.pkl')
@@ -14,7 +15,7 @@ model_5yr = joblib.load('./models/gbm_5yr.pkl')
 st.set_page_config(page_title="Clinical Decision Support System", layout="wide")
 st.title("🩺 Clinical Decision Support System")
 st.markdown(
-    "This system predicts the **risk of ESRD** using a machine learning model and explains the prediction with SHAP values."
+    "This system predicts the **risk of kidney failure** using a machine learning model and explains the prediction with SHAP values."
 )
 #st.markdown("<hr>", unsafe_allow_html=True)
 left_col, right_col = st.columns([2, 3], gap="large")
@@ -71,11 +72,16 @@ def render_prediction(model, input_data, year):
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(input_data)
     
-    st.write(f"Probability of ESRD within {year} year: **{esrd:.2%}**")
-    html_buffer = io.StringIO()
-    force_plot_html = shap.force_plot(explainer.expected_value, shap_values[0], input_data, matplotlib=False)
-    shap.save_html(html_buffer, force_plot_html)
-    components.html(html_buffer.getvalue(), scrolling=True)
+    st.write(f"Probability of kidney failure within {year} year: **{esrd:.2%}**")
+    # html_buffer = io.StringIO()
+    # force_plot_html = shap.force_plot(explainer.expected_value, shap_values[0], input_data, matplotlib=False)
+    # shap.save_html(html_buffer, force_plot_html)
+    # components.html(html_buffer.getvalue(), scrolling=True)
+    
+    shap.force_plot(explainer.expected_value, shap_values[0], input_data, matplotlib=True, show=False)
+    st.pyplot(plt.gcf(), clear_figure=True)
+ 
+
     
 with right_col:
     st.subheader("🤖 Predicted Results")
