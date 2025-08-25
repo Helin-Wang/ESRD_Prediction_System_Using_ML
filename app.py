@@ -5,7 +5,6 @@ import joblib
 import matplotlib.pyplot as plt
 import streamlit.components.v1 as components
 import io
-from streamlit_shap import st_shap
 
 # 加载模型和SHAP解释器
 model_1yr = joblib.load('./models/gbm_1yr.pkl')
