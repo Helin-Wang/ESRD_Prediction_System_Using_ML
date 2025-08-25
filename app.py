@@ -76,9 +76,32 @@ def render_prediction(model, input_data, year):
     # force_plot_html = shap.force_plot(explainer.expected_value, shap_values[0], input_data, matplotlib=False)
     # shap.save_html(html_buffer, force_plot_html)
     # components.html(html_buffer.getvalue(), scrolling=True)
+
+    # plt.figure(figsize=(30, 2)) 
+    # shap.force_plot(explainer.expected_value, shap_values[0], input_data, matplotlib=True, show=False)
+    # st.pyplot(plt.gcf(), clear_figure=True)
     
-    shap.force_plot(explainer.expected_value, shap_values[0], input_data, matplotlib=True, show=False)
-    st.pyplot(plt.gcf(), clear_figure=True)
+    min_width_px=1600
+    height_px=140
+    # 用 JS 版（matplotlib=False）
+    force_plot = shap.force_plot(
+        explainer.expected_value,
+        shap_values[0],
+        input_data,
+        matplotlib=False
+    )
+
+    # 存成 HTML
+    html_buffer = io.StringIO()
+    shap.save_html(html_buffer, force_plot)
+
+    # 外层加一个可横向滚动的容器，并强制一个较大的 min-width
+    wrapped = f"""
+    <div style="width:100%; overflow-x:auto; overflow-y:hidden;">
+      <div style="min-width:{min_width_px}px">{html_buffer.getvalue()}</div>
+    </div>
+    """
+    components.html(wrapped, height=height_px, scrolling=False)
  
 
     
